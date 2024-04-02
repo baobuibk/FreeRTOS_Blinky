@@ -37,6 +37,7 @@
 static void Status_Led_Task( void *pvParameters );
 static void LD4_Task( void *pvParameters );
 static void LD5_Task( void *pvParameters );
+static void Switch_Task( void *pvParameters );
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -104,6 +105,7 @@ int main(void)
   xTaskCreate(Status_Led_Task, "statusLEDTask",configMINIMAL_STACK_SIZE, NULL, 1, &status_task_Handle);
   xTaskCreate(LD4_Task, "LD4_Task",configMINIMAL_STACK_SIZE, NULL, 1, NULL);
   xTaskCreate(LD5_Task, "LD5_Task",configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+  xTaskCreate(Switch_Task, "SW task",configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
   /* USER CODE END 2 */
 
@@ -280,6 +282,21 @@ static void LD5_Task( void *pvParameters )
 		LL_GPIO_TogglePin(LD5_GPIO_Port,LD5_Pin);
 		UARTprintf("toggle LED5\n");
 		 vTaskDelayUntil( &xLastWakeTime, 1000 );
+
+	}
+}
+static void Switch_Task( void *pvParameters )
+{
+
+	while(1)
+	{
+		if (LL_GPIO_IsInputPinSet(SW_GPIO_Port, SW_Pin)) LL_GPIO_SetOutputPin(LD6_GPIO_Port, LD6_Pin);
+		else
+			{
+				UARTprintf("Button Pressed\n");
+				LL_GPIO_ResetOutputPin(LD6_GPIO_Port, LD6_Pin);
+			}
+		vTaskDelay(10);
 
 	}
 }
